@@ -1,14 +1,15 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import cors from 'cors';
-import { rowsRepo } from './db.js';
-import { findMissingDays, validateRow, weeklyTotal } from './validation.js';
+import { rowsRepo } from './db';
+import { findMissingDays, validateRow, weeklyTotal } from './validation';
+import { TimesheetRow } from './types';
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
 // GET a week's rows for a user
-app.get('/api/timesheet/:userId/:weekStart', (req, res) => {
+app.get('/api/timesheet/:userId/:weekStart', (req: Request, res: Response) => {
   const { userId, weekStart } = req.params;
   const rows = rowsRepo.getWeek(userId, weekStart);
   res.json({
@@ -19,9 +20,9 @@ app.get('/api/timesheet/:userId/:weekStart', (req, res) => {
 });
 
 // POST a new/updated row
-app.post('/api/timesheet/:userId/:weekStart', (req, res) => {
+app.post('/api/timesheet/:userId/:weekStart', (req: Request, res: Response) => {
   const { userId, weekStart } = req.params;
-  const row = { user_id: userId, week_start: weekStart, ...req.body };
+  const row: TimesheetRow = { user_id: userId, week_start: weekStart, ...req.body };
 
   const errors = validateRow(row);
   if (errors.length > 0) {
@@ -34,7 +35,7 @@ app.post('/api/timesheet/:userId/:weekStart', (req, res) => {
 
 // POST submit — blocks if any weekday has zero hours across all rows,
 // matching the original prototype's "submission blocked" behaviour
-app.post('/api/timesheet/:userId/:weekStart/submit', (req, res) => {
+app.post('/api/timesheet/:userId/:weekStart/submit', (req: Request, res: Response) => {
   const { userId, weekStart } = req.params;
   const rows = rowsRepo.getWeek(userId, weekStart);
   const missingDays = findMissingDays(rows);
@@ -51,7 +52,7 @@ app.post('/api/timesheet/:userId/:weekStart/submit', (req, res) => {
 });
 
 // GET previous week, for the "reuse as template" feature
-app.get('/api/timesheet/:userId/:weekStart/previous', (req, res) => {
+app.get('/api/timesheet/:userId/:weekStart/previous', (req: Request, res: Response) => {
   const { userId, weekStart } = req.params;
   const previous = rowsRepo.getPreviousWeek(userId, weekStart);
   if (previous.length === 0) {

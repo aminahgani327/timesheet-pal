@@ -1,4 +1,4 @@
-import { findMissingDays, validateRow, weeklyTotal } from '../src/validation.js';
+import { findMissingDays, validateRow, weeklyTotal } from '../src/validation';
 
 describe('findMissingDays', () => {
   test('flags all days when there are no rows', () => {

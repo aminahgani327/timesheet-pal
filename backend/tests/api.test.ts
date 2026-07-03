@@ -1,5 +1,5 @@
 import request from 'supertest';
-import app from '../src/server.js';
+import app from '../src/server';
 
 describe('POST /api/timesheet/:userId/:weekStart', () => {
   test('rejects a row with no charge code', async () => {
@@ -25,9 +25,7 @@ describe('POST /api/timesheet/:userId/:weekStart/submit', () => {
       .post(`/api/timesheet/testuser2/${week}`)
       .send({ charge_code: 'CC100', mon: 8, tue: 8, wed: 8, thu: 8, fri: 0 });
 
-    const res = await request(app).post(
-      `/api/timesheet/testuser2/${week}/submit`
-    );
+    const res = await request(app).post(`/api/timesheet/testuser2/${week}/submit`);
     expect(res.status).toBe(400);
     expect(res.body.missingDays).toContain('fri');
   });
